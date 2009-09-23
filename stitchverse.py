@@ -1,59 +1,21 @@
 import optparse
 import random
-import socket
 import string
 import sys
 
 import pronounce
 
-parser = optparse.OptionParser()
-parser.add_option("-p", "--port", dest="port",
-                  help="listen on PORT")
-
 def main():
-    options, args = parser.parse_args()
-    if args:
-        parser.print_help()
-        sys.exit(1)
-    if options.port is not None:
-        host, port = '', int(options.port)
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.bind((host, port))
-        while True:
-            s.listen(1)
-            conn, addr = s.accept()
-            print >>sys.stderr, 'accepted from', addr
-            filtering(*files_from_socket(conn))
-    else:
-        filtering(sys.stdin, sys.stdout)
-
-def filtering(infile, outfile):
-    for line in filter_for_verse(infile):
-        outfile.write(line)
-
-def files_from_socket(conn):
-    # Geez. Return a pair of things acting enough like files for our use.
-    def infile():
-        buffer = ''  # The last partial line read so far.
-        while True:
-            data = conn.recv(4096)
-            if not data: break
-            lines = (buffer + data).split('\n')
-            for line in lines[:-1]:
-                yield line + '\n'
-            buffer = lines[-1]
-        if buffer:
-            yield buffer
-    class Outfile:
-        def write(self, line):
-            conn.send(line)
-    return infile(), Outfile()
+    for line in filter_for_verse(sys.stdin):
+        sys.stdout.write(line)
+        sys.stdout.flush()
 
 def filter_for_verse(lines):
     meter = iambic_pentameter
     seen = set()
-    for line in lines:
+    while True:
+        line = lines.readline()
+        if not line: break;
         #print >>sys.stderr, 'LINE:', line,
         if line in seen: continue
         if meter_matches(meter, clean(line).split()):
