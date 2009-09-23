@@ -54,7 +54,7 @@ def filter_for_verse(lines):
     meter = iambic_pentameter
     seen = set()
     for line in lines:
-        print >>sys.stderr, 'LINE:', line,
+        #print >>sys.stderr, 'LINE:', line,
         if line in seen: continue
         if meter_matches(meter, clean(line).split()):
             yield line
@@ -77,8 +77,10 @@ def match_words(words, line_meter):
     meter = line_meter
     for word in words:
         if meter is None: break
-        if meter == ():
-            meter = line_meter
+        if False:
+            # This lets us treat tweets as multiple lines in the given meter.
+            # Disabled for now.
+            if meter == (): meter = line_meter
         meter, rhyme = match_word(word, meter)
     return meter
 
