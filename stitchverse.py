@@ -56,18 +56,19 @@ def filter_for_verse(lines):
     for line in lines:
         #print >>sys.stderr, 'LINE:', line,
         if line in seen: continue
-        if meter_matches(meter, clean(line).split()):
+        if meter_matches(meter, get_words(line)):
             yield line
             seen.add(line)
 
-def clean(line):
+def get_words(line):
     import re
     line = re.sub(r"&#8217;", "'", line)
     line = re.sub(r"&amp;", "&", line)
     # Strip smileys:
     line = re.sub(r":D(\W|$)", r"\1", line)
     line = re.sub(r"(^|\W)D:", r"\1", line)
-    return re.sub(r"[^A-Za-z0-9']", ' ', line)
+    line = re.sub(r"[^A-Za-z0-9']", ' ', line)
+    return [word.strip("'") for word in line.split()]
 
 slack, stressed, rhymed = range(3)
 iamb = (slack, stressed)
