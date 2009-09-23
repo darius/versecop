@@ -5,20 +5,37 @@ import sys
 
 import pronounce
 
+parser = optparse.OptionParser()
+parser.add_option("-s", "--slacker", dest="slacker",
+                  action="store_true",
+                  help="Allow a slack syllable to end lines")
+options = None
+
 def main():
+    global options
+    options, args = parser.parse_args()
+    if args:
+        parser.print_help()
+        sys.exit(1)
+    filtering()
+
+def filtering():
     for line in filter_for_verse(sys.stdin):
         sys.stdout.write(line)
         sys.stdout.flush()
 
 def filter_for_verse(lines):
     meter = iambic_pentameter
+    meter2 = meter + (slack,)
     seen = set()
     while True:
         line = lines.readline()
         if not line: break;
         #print >>sys.stderr, 'LINE:', line,
         if line in seen: continue
-        if meter_matches(meter, get_words(line)):
+        words = get_words(line)
+        if (meter_matches(meter, words)
+            or (options.slacker and meter_matches(meter2, words))):
             yield line
             seen.add(line)
 
