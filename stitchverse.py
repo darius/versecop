@@ -80,11 +80,11 @@ def match_words(words, line_meter):
         if meter == ():
             meter = line_meter
         meter, rhyme = match_word(word, meter)
-#    if meter is not None: print 'PARTIAL'
     return meter
 
 def match_phones(phones, meter):
     beats = segment_beats(phones)
+    if not beats: return None, None
     lobeat, hibeat = argh(beats)
     v, nvowels = 0, len(beats)
     p, nphones = 0, len(phones)
@@ -162,6 +162,7 @@ def try_guess(word, meter):
         beats = guesses[word]
     except KeyError:
         return None, None
+    if not beats: return None, None
     lobeat, hibeat = argh(beats)
     nvowels = len(beats)
     for j, m in enumerate(meter):
