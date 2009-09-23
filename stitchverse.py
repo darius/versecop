@@ -1,29 +1,29 @@
 import optparse
 import random
+import re
 import string
 import sys
 
 import pronounce
 
 def main():
-    for line in filter_for_verse(sys.stdin):
-        sys.stdout.write(line)
+    for meta, line in filter_for_verse(sys.stdin):
+        sys.stdout.write(meta + ' ' + line)
         sys.stdout.flush()
 
 def filter_for_verse(lines):
     meter = iambic_pentameter
     seen = set()
     while True:
-        line = lines.readline()
+        meta, line = re.split(' ', lines.readline(), 1)
         if not line: break;
         #print >>sys.stderr, 'LINE:', line,
         if line in seen: continue
         if meter_matches(meter, clean(line).split()):
-            yield line
+            yield meta, line
             seen.add(line)
 
 def clean(line):
-    import re
     line = re.sub(r"&#8217;", "'", line)
     line = re.sub(r"&amp;", "&", line)
     # Strip smileys:
