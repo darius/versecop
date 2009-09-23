@@ -64,6 +64,9 @@ def clean(line):
     import re
     line = re.sub(r"&#8217;", "'", line)
     line = re.sub(r"&amp;", "&", line)
+    # Strip smileys:
+    line = re.sub(r":D(\W|$)", r"\1", line)
+    line = re.sub(r"(^|\W)D:", r"\1", line)
     return re.sub(r"[^A-Za-z0-9']", ' ', line)
 
 slack, stressed, rhymed = range(3)
