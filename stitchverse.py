@@ -21,8 +21,8 @@ def main():
     filtering()
 
 def filtering():
-    for meta, line in filter_for_verse(sys.stdin):
-        sys.stdout.write(meta + ' ' + line)
+    for input in filter_for_verse(sys.stdin):
+        sys.stdout.write(input)
         sys.stdout.flush()
 
 def filter_for_verse(infile):
@@ -30,19 +30,19 @@ def filter_for_verse(infile):
     meter2 = meter + (slack,)
     seen = set()
     while True:
-        line = infile.readline()
-        if not line: break
-        if line in seen: continue
+        input = infile.readline()
+        if not input: break
+        if input in seen: continue
         try:
-            meta, line = line.split(' ', 1)
+            meta, line = input.split(' ', 1)
         except ValueError:
             # A too-short line -- skip it.
             continue
         words = get_words(line)
         if (meter_matches(meter, words)
             or (options.slacker and meter_matches(meter2, words))):
-            yield meta, line
-            seen.add(line)
+            yield input
+            seen.add(input)
 
 def get_words(line):
     line = re.sub(r"&#8217;", "'", line)
