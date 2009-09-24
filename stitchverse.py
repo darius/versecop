@@ -25,12 +25,12 @@ def filtering():
         sys.stdout.write(meta + ' ' + line)
         sys.stdout.flush()
 
-def filter_for_verse(lines):
+def filter_for_verse(infile):
     meter = iambic_pentameter
     meter2 = meter + (slack,)
     seen = set()
     while True:
-        meta, line = re.split(' ', lines.readline(), 1)
+        meta, line = re.split(' ', infile.readline(), 1)
         if not line: break;
         #print >>sys.stderr, 'LINE:', line,
         if line in seen: continue
