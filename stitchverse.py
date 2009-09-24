@@ -1,5 +1,6 @@
 import optparse
 import random
+import re
 import string
 import sys
 
@@ -20,8 +21,8 @@ def main():
     filtering()
 
 def filtering():
-    for line in filter_for_verse(sys.stdin):
-        sys.stdout.write(line)
+    for meta, line in filter_for_verse(sys.stdin):
+        sys.stdout.write(meta + ' ' + line)
         sys.stdout.flush()
 
 def filter_for_verse(infile):
@@ -29,18 +30,17 @@ def filter_for_verse(infile):
     meter2 = meter + (slack,)
     seen = set()
     while True:
-        line = infile.readline()
+        meta, line = re.split(' ', infile.readline(), 1)
         if not line: break;
         #print >>sys.stderr, 'LINE:', line,
         if line in seen: continue
         words = get_words(line)
         if (meter_matches(meter, words)
             or (options.slacker and meter_matches(meter2, words))):
-            yield line
+            yield meta, line
             seen.add(line)
 
 def get_words(line):
-    import re
     line = re.sub(r"&#8217;", "'", line)
     line = re.sub(r"&amp;", "&", line)
     # Strip smileys:
