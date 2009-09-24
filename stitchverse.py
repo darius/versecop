@@ -44,8 +44,8 @@ def get_words(line):
     line = re.sub(r"&#8217;", "'", line)
     line = re.sub(r"&amp;", "&", line)
     # Strip smileys:
-    line = re.sub(r":D(\W|$)", r"\1", line)
-    line = re.sub(r"(^|\W)D:", r"\1", line)
+    line = re.sub(r":D(?!\w)", '', line)
+    line = re.sub(r"(?<!\w)D:", '', line)
     line = re.sub(r"[^A-Za-z0-9']", ' ', line)
     return [word.strip("'") for word in line.split()]
 
