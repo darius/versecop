@@ -30,10 +30,14 @@ def filter_for_verse(infile):
     meter2 = meter + (slack,)
     seen = set()
     while True:
-        meta, line = re.split(' ', infile.readline(), 1)
-        if not line: break;
-        #print >>sys.stderr, 'LINE:', line,
+        line = infile.readline()
+        if not line: break
         if line in seen: continue
+        try:
+            meta, line = line.split(' ', 1)
+        except ValueError:
+            # A too-short line -- skip it.
+            continue
         words = get_words(line)
         if (meter_matches(meter, words)
             or (options.slacker and meter_matches(meter2, words))):
