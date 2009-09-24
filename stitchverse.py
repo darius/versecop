@@ -6,30 +6,48 @@ import sys
 
 import pronounce
 
+parser = optparse.OptionParser()
+parser.add_option("-s", "--slacker", dest="slacker",
+                  action="store_true",
+                  help="Allow a slack syllable to end lines")
+options = None
+
 def main():
+    global options
+    options, args = parser.parse_args()
+    if args:
+        parser.print_help()
+        sys.exit(1)
+    filtering()
+
+def filtering():
     for meta, line in filter_for_verse(sys.stdin):
         sys.stdout.write(meta + ' ' + line)
         sys.stdout.flush()
 
 def filter_for_verse(lines):
     meter = iambic_pentameter
+    meter2 = meter + (slack,)
     seen = set()
     while True:
         meta, line = re.split(' ', lines.readline(), 1)
         if not line: break;
         #print >>sys.stderr, 'LINE:', line,
         if line in seen: continue
-        if meter_matches(meter, clean(line).split()):
+        words = get_words(line)
+        if (meter_matches(meter, words)
+            or (options.slacker and meter_matches(meter2, words))):
             yield meta, line
             seen.add(line)
 
-def clean(line):
+def get_words(line):
     line = re.sub(r"&#8217;", "'", line)
     line = re.sub(r"&amp;", "&", line)
     # Strip smileys:
     line = re.sub(r":D(\W|$)", r"\1", line)
     line = re.sub(r"(^|\W)D:", r"\1", line)
-    return re.sub(r"[^A-Za-z0-9']", ' ', line)
+    line = re.sub(r"[^A-Za-z0-9']", ' ', line)
+    return [word.strip("'") for word in line.split()]
 
 slack, stressed, rhymed = range(3)
 iamb = (slack, stressed)
