@@ -7,8 +7,10 @@ import sys
 import pronounce
 
 parser = optparse.OptionParser()
-parser.add_option("-s", "--slacker", dest="slacker",
-                  action="store_true",
+parser.add_option('-b', '--beats', dest='beats', default='5',
+                  help="Number of beats/line (default 5)")
+parser.add_option('-s', '--slacker', dest='slacker',
+                  action='store_true',
                   help="Allow a slack syllable to end lines")
 options = None
 
@@ -26,7 +28,7 @@ def filtering():
         sys.stdout.flush()
 
 def filter_for_verse(infile):
-    meter = iambic_pentameter
+    meter = iamb * int(options.beats)
     meter2 = meter + (slack,)
     seen = set()
     while True:
@@ -45,11 +47,16 @@ def filter_for_verse(infile):
             seen.add(input)
 
 def get_words(line):
+    line = re.sub(r'^<text>|</text>$', '', line)
     line = re.sub(r"&#8217;", "'", line)
     line = re.sub(r"&amp;", "&", line)
     # Strip smileys:
-    line = re.sub(r":D(?!\w)", '', line)
-    line = re.sub(r"(?<!\w)D:", '', line)
+    # TODO: o.o
+    line = re.sub(r"[:;=][DxLPp](?!\w)", ' ', line)
+    line = re.sub(r"(?<!\w)[Dx][:;=]", ' ', line)
+    line = re.sub(r"[:;]o\)", ' ', line)
+    line = re.sub(r"(?<!\w)8\)|\(8(?!\w)", ' ', line)
+    # Remove non-words:
     line = re.sub(r"[^A-Za-z0-9']", ' ', line)
     return [word.strip("'") for word in line.split()]
 
@@ -109,7 +116,7 @@ def match_phones(phones, meter):
 #  instead of banning them, and then include more words in this set?
 unstressables = 'a an of the'.split()
 if True:
-    unstressables += 'am and for in is on or that to with'.split()
+    unstressables += 'am and n for in is on or that to with'.split()
     unstressables += 'are as be by he him his her my she them us we'.split()
     unstressables += 'its they their were you your'.split()
     unstressables += 'at do did from i it me'.split()
