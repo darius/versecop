@@ -21,17 +21,25 @@ def main():
     filtering()
 
 def filtering():
-    for input in filter_for_verse(sys.stdin):
-        sys.stdout.write(input)
-        sys.stdout.flush()
+    write_lines(sys.stdout, 
+                filter_for_verse(read_lines(sys.stdin)))
 
-def filter_for_verse(infile):
-    meter = metercop.iamb * int(options.beats)
-    meter2 = meter + (metercop.slack,)
-    seen = set()
+def write_lines(outfile, lines):
+    for line in lines:
+        outfile.write(line)
+        outfile.flush()
+
+def read_lines(infile):
     while True:
         input = infile.readline()
         if not input: break
+        yield input
+
+def filter_for_verse(inputs):
+    meter = metercop.iamb * int(options.beats)
+    meter2 = meter + (metercop.slack,)
+    seen = set()
+    for input in inputs:
         if input in seen: continue
         try:
             meta, line = input.split(' ', 1)
