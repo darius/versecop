@@ -37,6 +37,18 @@ def match_phones(phones, meter):
             return meter[j+1:], None
     return None, None             # XXX was (), None
 
+def count_syllables(word):
+    try:
+        phones = pronounce.pronounce(word)
+    except KeyError:
+        try:
+            beats = guesses[word]
+        except KeyError:
+            return None
+    else:
+        beats = segment_beats(phones)
+    return len(beats)
+    
 
 # Unchanged from verse.py from here down
 

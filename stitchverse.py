@@ -10,19 +10,30 @@ parser.add_option('-b', '--beats', dest='beats', default='5',
 parser.add_option('-s', '--slacker', dest='slacker',
                   action='store_true',
                   help="Allow a slack syllable to end lines")
+parser.add_option('-v', '--verse', dest='verse', default='blankverse',
+                  help="Verse form: haiku or (default) blankverse")
 options = None
+meter1, meter2 = None, None
 
 def main():
-    global options
+    global options, meter1, meter2
     options, args = parser.parse_args()
     if args:
         parser.print_help()
         sys.exit(1)
-    filtering()
+    if options.verse == 'blankverse':
+        meter1 = metercop.iamb * int(options.beats)
+        meter2 = meter1 + (metercop.slack,)
+        filtering(filter_blank_verse)
+    elif options.verse == 'haiku':
+        filtering(filter_haiku)
+    else:
+        parser.print_help()
+        sys.exit(1)
 
-def filtering():
-    write_lines(sys.stdout, 
-                filter_for_verse(read_lines(sys.stdin)))
+def filtering(verse_form):
+    write_lines(sys.stdout, filter_for(verse_form,
+                                       read_lines(sys.stdin)))
 
 def write_lines(outfile, lines):
     for line in lines:
@@ -35,9 +46,7 @@ def read_lines(infile):
         if not input: break
         yield input
 
-def filter_for_verse(inputs):
-    meter = metercop.iamb * int(options.beats)
-    meter2 = meter + (metercop.slack,)
+def filter_for(verse_form, inputs):
     seen = set()
     for input in inputs:
         if input in seen: continue
@@ -46,12 +55,37 @@ def filter_for_verse(inputs):
         except ValueError:
             # A too-short line -- skip it.
             continue
-        tokens = get_tokens(line)
-        output = (versify(meter, tokens)
-                  or (options.slacker and versify(meter2, tokens)))
+        output = verse_form(get_tokens(line))
         if output:
             yield meta + ' ' + output
             seen.add(input)
+
+def filter_haiku(tokens):
+    counts = [5, 7, 5]
+    acc = ''
+    nsyllables = 0
+    for token in tokens:
+        if not is_word(token):
+            acc += token
+        else:
+            word = clean_word(token)
+            n = metercop.count_syllables(word)
+            if n is None or not counts:
+                return None
+            if n and counts[0] == nsyllables:
+                acc += '<br/>'
+                nsyllables -= counts.pop(0)
+                if not counts:
+                    return None
+            nsyllables += n
+            if counts[0] < nsyllables:
+                return None
+            acc += token
+    return acc if counts == [nsyllables] else None
+
+def filter_blank_verse(tokens):
+    return (versify(meter1, tokens)
+            or (options.slacker and versify(meter2, tokens)))
 
 def versify(line_meter, tokens):
     acc = ''
