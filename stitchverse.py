@@ -50,15 +50,18 @@ def get_words(line):
     line = re.sub(r'^<text>|</text>$', '', line)
     line = re.sub(r"&#8217;", "'", line)
     line = re.sub(r"&amp;", "&", line)
-    # Strip smileys:
-    # TODO: o.o
-    line = re.sub(r"[:;=][DExLPp](?!\w)", ' ', line)
-    line = re.sub(r"(?<!\w)[Dx][:;=]", ' ', line)
-    line = re.sub(r"[:;]o\)", ' ', line)
-    line = re.sub(r"(?<!\w)8\)|\(8(?!\w)", ' ', line)
+    line = re.sub(smiley_pat, ' ', line)
     # Remove non-words:
     line = re.sub(r"[^A-Za-z0-9']", ' ', line)
     return [word.strip("'") for word in line.split()]
+
+smiley_pats = [r'[:;=][DExLPp](?!\w)',
+               r"(?<!\w)[Dx][:;=]",
+               r"[:;]o\)",
+               r"(?<!\w)8\)|\(8(?!\w)",
+               # TODO: o.o
+               ]
+smiley_pat = '|'.join(smiley_pats)
 
 slack, stressed, rhymed = range(3)
 iamb = (slack, stressed)
