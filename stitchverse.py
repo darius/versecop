@@ -52,7 +52,7 @@ def get_words(line):
     line = re.sub(r"&amp;", "&", line)
     # Strip smileys:
     # TODO: o.o
-    line = re.sub(r"[:;=][DxLPp](?!\w)", ' ', line)
+    line = re.sub(r"[:;=][DExLPp](?!\w)", ' ', line)
     line = re.sub(r"(?<!\w)[Dx][:;=]", ' ', line)
     line = re.sub(r"[:;]o\)", ' ', line)
     line = re.sub(r"(?<!\w)8\)|\(8(?!\w)", ' ', line)
