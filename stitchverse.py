@@ -46,14 +46,29 @@ def filter_for_verse(inputs):
         except ValueError:
             # A too-short line -- skip it.
             continue
-        words = get_words(line)
-        if (meter_matches(meter, words)
-            or (options.slacker and meter_matches(meter2, words))):
-            yield input
+        tokens = get_tokens(line)
+        output = (versify(meter, tokens)
+                  or (options.slacker and versify(meter2, tokens)))
+        if output:
+            yield meta + ' ' + output
             seen.add(input)
 
-def meter_matches(meter, words):
-    return () == match_words(words, meter)
+def versify(line_meter, tokens):
+    acc = ''
+    meter = line_meter
+    for token in tokens:
+        if not is_word(token):
+            acc += token
+        else:
+            if meter == ():
+                meter = line_meter
+                acc += '<br/>'
+            word = clean_word(token)
+            meter, rhyme = metercop.match_word(word, meter)
+            if meter is None:
+                break
+            acc += token
+    return acc if meter == () else None
 
 def match_words(words, line_meter):
     meter = line_meter
@@ -65,6 +80,10 @@ def match_words(words, line_meter):
             if meter == (): meter = line_meter
         meter, rhyme = metercop.match_word(word, meter)
     return meter
+
+def get_tokens(text):
+    text = re.sub(r'^<text>|</text>$', '', text)
+    return re.split(token_pat, text)
 
 def get_words(line):
     line = re.sub(r'^<text>|</text>$', '', line)
@@ -82,6 +101,18 @@ smiley_pats = [r'[:;=][DExLPp](?!\w)',
                # TODO: o.o T.T
                ]
 smiley_pat = '|'.join(smiley_pats)
+
+rquote_pat = r"&#8217;"
+word_pat = r"(?:[\w']|%s)+" % (rquote_pat,)
+
+token_pat = '(%s|%s|&amp;)' % (word_pat, smiley_pat)
+
+def is_word(token):
+    return re.match(word_pat, token)
+
+def clean_word(token):
+    token = re.sub(r"&#8217;", "'", token)
+    return token.strip("'")
 
 
 if __name__ == '__main__':
