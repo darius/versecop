@@ -87,12 +87,13 @@ smiley_pats = [r'[:;=][DExLPp](?!\w)',
                r"(?<!\w)[Dx][:;=]",
                r"[:;]o\)",
                r"(?<!\w)8\)|\(8(?!\w)",
-               # TODO: o.o T.T
+               # TODO: o.o T.T X_X
                ]
 smiley_pat = '|'.join(smiley_pats)
 
 rquote_pat = r"&#8217;"
-word_pat = r"(?:[\w']|%s)+" % (rquote_pat,)
+#word_pat = r"(?:[\w']|%s)+" % (rquote_pat,)
+word_pat = r"(?:[A-Za-z0-9']|%s)+" % (rquote_pat,)
 
 token_pat = '(%s|%s|&amp;)' % (word_pat, smiley_pat)
 
