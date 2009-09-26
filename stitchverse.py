@@ -108,20 +108,12 @@ def get_tokens(text):
     text = re.sub(r'^<text>|</text>$', '', text)
     return re.split(token_pat, text)
 
-def get_words(line):
-    line = re.sub(r'^<text>|</text>$', '', line)
-    line = re.sub(r"&#8217;", "'", line)
-    line = re.sub(r"&amp;", "&", line)
-    line = re.sub(smiley_pat, ' ', line)
-    # Remove non-words:
-    line = re.sub(r"[^A-Za-z0-9']", ' ', line)
-    return [word.strip("'") for word in line.split()]
-
 smiley_pats = [r'[:;=][DExLPp](?!\w)',
                r"(?<!\w)[Dx][:;=]",
                r"[:;]o\)",
                r"(?<!\w)8\)|\(8(?!\w)",
-               # TODO: o.o T.T X_X
+               # TODO: o.o o.O T.T X_X
+               #r"(?<!\w)[oOTX][_.][oOTX](?!\w)",
                ]
 smiley_pat = '|'.join(smiley_pats)
 
