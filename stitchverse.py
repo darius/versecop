@@ -70,17 +70,6 @@ def versify(line_meter, tokens):
             acc += token
     return acc if meter == () else None
 
-def match_words(words, line_meter):
-    meter = line_meter
-    for word in words:
-        if meter is None: break
-        if False:
-            # This lets us treat tweets as multiple lines in the given meter.
-            # Disabled for now.
-            if meter == (): meter = line_meter
-        meter, rhyme = metercop.match_word(word, meter)
-    return meter
-
 def get_tokens(text):
     text = re.sub(r'^<text>|</text>$', '', text)
     return re.split(token_pat, text)
