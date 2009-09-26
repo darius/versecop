@@ -108,7 +108,7 @@ def get_tokens(text):
     text = re.sub(r'^<text>|</text>$', '', text)
     return re.split(token_pat, text)
 
-smiley_pats = [r'[:;=][DExLPp](?!\w)',
+smiley_pats = [r'[:;=][DExLOPp](?!\w)',
                r"(?<!\w)[Dx][:;=]",
                r"[:;]o\)",
                r"(?<!\w)8\)|\(8(?!\w)",
