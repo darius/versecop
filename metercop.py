@@ -57,7 +57,7 @@ def count_syllables(word):
 unstressables = 'a an of the'.split()
 if True:
     unstressables += 'am and n for in is on or that to with'.split()
-    unstressables += 'are as be by he him his her my she them us we'.split()
+    unstressables += 'are as be by he him his her my she them em us we'.split()
     unstressables += 'its they their were you your'.split()
     unstressables += 'at do did from i it me'.split()
     unstressables += 'but had has have our shall was will'.split()
