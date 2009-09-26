@@ -6,20 +6,6 @@ slack, stressed, rhymed = range(3)
 iamb = (slack, stressed)
 iambic_pentameter = iamb * 5
 
-def meter_matches(meter, words):
-    return () == match_words(words, meter)
-
-def match_words(words, line_meter):
-    meter = line_meter
-    for word in words:
-        if meter is None: break
-        if False:
-            # This lets us treat tweets as multiple lines in the given meter.
-            # Disabled for now.
-            if meter == (): meter = line_meter
-        meter, rhyme = match_word(word, meter)
-    return meter
-
 def match_phones(phones, meter):
     beats = segment_beats(phones)
     if not beats: return None, None

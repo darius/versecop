@@ -47,10 +47,24 @@ def filter_for_verse(inputs):
             # A too-short line -- skip it.
             continue
         words = get_words(line)
-        if (metercop.meter_matches(meter, words)
-            or (options.slacker and metercop.meter_matches(meter2, words))):
+        if (meter_matches(meter, words)
+            or (options.slacker and meter_matches(meter2, words))):
             yield input
             seen.add(input)
+
+def meter_matches(meter, words):
+    return () == match_words(words, meter)
+
+def match_words(words, line_meter):
+    meter = line_meter
+    for word in words:
+        if meter is None: break
+        if False:
+            # This lets us treat tweets as multiple lines in the given meter.
+            # Disabled for now.
+            if meter == (): meter = line_meter
+        meter, rhyme = metercop.match_word(word, meter)
+    return meter
 
 def get_words(line):
     line = re.sub(r'^<text>|</text>$', '', line)
@@ -65,7 +79,7 @@ smiley_pats = [r'[:;=][DExLPp](?!\w)',
                r"(?<!\w)[Dx][:;=]",
                r"[:;]o\)",
                r"(?<!\w)8\)|\(8(?!\w)",
-               # TODO: o.o
+               # TODO: o.o T.T
                ]
 smiley_pat = '|'.join(smiley_pats)
 
