@@ -33,8 +33,9 @@ def collect_passages(words, min_length=None):
     # frame" we find is the best one. Thus we suspend judgement and
     # drop the duplicates after.)
     for i in loud_range(len(words)):
-        passage, nlines = read_passage(tail(words, i))
-        if nlines and min_length <= nlines:
+        passage = read_passage(tail(words, i))
+        nlines = passage.count('\n')
+        if min_length <= nlines:
             dupe_key = tuple(passage.split())
             if dupe_key not in dupes:
                 results.setdefault(nlines, []).append(passage)
@@ -62,10 +63,10 @@ def tail(xs, i):
     return (xs[j] for j in xrange(i, len(xs)))
 
 def read_passage(words):
-    """Return the maximal prefix of words that is in iambs, along with
-    its length in iambic-pentameter lines."""
+    """Return, as a string, any iambic-pentameter lines that start the
+    given word-sequence."""
     meter = metercop.iamb * 5
-    passage, nlines = '', 0
+    passage = ''
     for word in words:
         meter, rhyme = metercop.match_word(word, meter)
         if meter is None:
@@ -74,8 +75,7 @@ def read_passage(words):
         if meter == ():
             passage += '\n'
             meter = metercop.iamb * 5
-            nlines += 1
-    return passage, nlines
+    return passage
 
 
 test_input = """
