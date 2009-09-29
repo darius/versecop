@@ -15,10 +15,6 @@ def main():
 def text_passages(text, min_length=None):
     return collect_passages(get_words(text), min_length)
 
-def get_words(text):
-    "Return text's words in order."
-    return [word.strip("'") for word in re.findall(r"['\w]+", text)]
-
 def collect_passages(words, min_length=None):
     """Return a dict mapping #lines (>=min_length) to a list of
     passages of that many iambic-pentameter lines (perhaps with a
@@ -42,6 +38,25 @@ def collect_passages(words, min_length=None):
                 add_subseqs(dupes, dupe_key[1:])
     return results
 
+def read_passage(words):
+    """Return, as a string, any iambic-pentameter lines that start the
+    given word-sequence."""
+    meter = metercop.iamb * 5
+    passage = ''
+    for word in words:
+        meter, rhyme = metercop.match_word(word, meter)
+        if meter is None:
+            break
+        passage += ' ' + word
+        if meter == ():
+            passage += '\n'
+            meter = metercop.iamb * 5
+    return passage
+
+def get_words(text):
+    "Return text's words in order."
+    return [word.strip("'") for word in re.findall(r"['\w]+", text)]
+
 def loud_range(n):
     "Like xrange(n), but reporting progress to stderr."
     print >>sys.stderr, n
@@ -61,21 +76,6 @@ def add_subseqs(xs_set, xs):
 def tail(xs, i):
     "Generate xs[i:] without materializing it."
     return (xs[j] for j in xrange(i, len(xs)))
-
-def read_passage(words):
-    """Return, as a string, any iambic-pentameter lines that start the
-    given word-sequence."""
-    meter = metercop.iamb * 5
-    passage = ''
-    for word in words:
-        meter, rhyme = metercop.match_word(word, meter)
-        if meter is None:
-            break
-        passage += ' ' + word
-        if meter == ():
-            passage += '\n'
-            meter = metercop.iamb * 5
-    return passage
 
 
 test_input = """
