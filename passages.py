@@ -8,10 +8,9 @@ def main():
     regard to line-breaks; longer ones first."""
     passages = text_passages(sys.stdin.read())
     for nlines in sorted(passages.keys(), reverse=True):
-        if 1 < nlines:
-            for passage in passages[nlines]:
-                print passage
-                print
+        for passage in passages[nlines]:
+            print passage
+            print
 
 def text_passages(text, min_length=None):
     return collect_passages(get_words(text), min_length)
