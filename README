@@ -1,3 +1,5 @@
-to be written
-
-Extracted from http://github.com/darius/languagetoys
+This started as an extract from http://github.com/darius/languagetoys
+to focus just on filtering iambic-pentameter verse out of a Twitter
+stream, like @pentametron except predating it. While the results were
+encouraging at the time, I didn't want to spend the money on hosting
+it.
